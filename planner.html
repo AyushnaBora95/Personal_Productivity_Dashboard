@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Planner Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/theme.css">
+
+
+    <style>
+        :root {
+            --bg-dark: #1E1A17;
+            --bg-card: #2A2420;
+            --accent-gold: #C6A175;
+            --accent-light: #E4D2B4;
+            --text-heading: #F5E6D3;
+            --text-body: #D7CEC5;
+            --text-muted: #A89C8F;
+            --danger: #C85C5C;
+            --urgent: #C85C5C;
+            --important: #4A7B9D;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-body);
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-gold);
+            border-radius: 10px;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Cinzel Decorative', serif;
+            color: var(--text-heading);
+            letter-spacing: 2px;
+        }
+
+        .navbar-custom {
+            background-color: var(--bg-dark);
+            border-bottom: 1px solid var(--accent-gold);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 28px;
+            color: var(--text-heading);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+        }
+
+        .nav-link {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 18px;
+            color: var(--text-heading);
+            text-decoration: none;
+            margin: 0 15px;
+            transition: color 0.3s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            color: var(--accent-gold);
+        }
+
+        .app-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(198,161,117,0.35);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: inset 0 0 12px rgba(0,0,0,0.4),
+                        0 0 25px rgba(0,0,0,0.7);
+            transition: 0.25s;
+            margin-bottom: 25px;
+        }
+
+        .app-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .btn-gold {
+            background-color: var(--accent-gold);
+            color: #1E1A17;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 600;
+            border: none;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .btn-gold:hover {
+            background-color: #D7B88D;
+        }
+
+        .btn-outline-gold {
+            background: transparent;
+            border: 1px solid var(--accent-gold);
+            color: var(--accent-gold);
+            border-radius: 8px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-outline-gold:hover {
+            background: var(--accent-gold);
+            color: #1E1A17;
+        }
+
+        input, textarea, select {
+            background-color: #191614;
+            border: 1px solid var(--accent-gold);
+            color: var(--text-heading);
+            border-radius: 8px;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+        }
+
+        footer {
+            margin-top: 40px;
+            color: var(--text-muted);
+            font-size: 14px;
+            text-align: center;
+            padding-bottom: 20px;
+        }
+
+        .planner-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .date-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .current-date {
+            font-size: 20px;
+            color: var(--accent-light);
+        }
+
+        .quote-container {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            font-style: italic;
+            color: var(--accent-light);
+            border-top: 1px solid rgba(198,161,117,0.3);
+            border-bottom: 1px solid rgba(198,161,117,0.3);
+        }
+
+        .quote-text {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .quote-author {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .progress-container {
+            margin: 20px 0;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background-color: #191614;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--accent-gold);
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .stat-item {
+            padding: 15px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            color: var(--accent-gold);
+            font-weight: 600;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid rgba(198,161,117,0.2);
+            transition: background-color 0.2s;
+        }
+
+        .task-item:hover {
+            background-color: rgba(198,161,117,0.1);
+        }
+
+        .task-checkbox {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+            accent-color: var(--accent-gold);
+        }
+
+        .task-content {
+            flex-grow: 1;
+        }
+
+        .task-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .task-meta {
+            font-size: 14px;
+            color: var(--text-muted);
+            display: flex;
+            gap: 15px;
+        }
+
+        .priority-high {
+            color: var(--danger);
+        }
+
+        .priority-medium {
+            color: var(--accent-gold);
+        }
+
+        .priority-low {
+            color: var(--text-muted);
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .completed {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .matrix-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .matrix-quadrant {
+            background: rgba(25, 22, 20, 0.5);
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 200px;
+            border: 1px solid;
+        }
+
+        .quadrant-1 {
+            border-color: var(--urgent);
+        }
+
+        .quadrant-2 {
+            border-color: var(--important);
+        }
+
+        .quadrant-3 {
+            border-color: var(--accent-gold);
+        }
+
+        .quadrant-4 {
+            border-color: var(--text-muted);
+        }
+
+        .quadrant-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid;
+        }
+
+        .quadrant-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .quadrant-1 .quadrant-header {
+            border-bottom-color: var(--urgent);
+        }
+
+        .quadrant-2 .quadrant-header {
+            border-bottom-color: var(--important);
+        }
+
+        .quadrant-3 .quadrant-header {
+            border-bottom-color: var(--accent-gold);
+        }
+
+        .quadrant-4 .quadrant-header {
+            border-bottom-color: var(--text-muted);
+        }
+
+        .matrix-task {
+            background: rgba(198, 161, 117, 0.1);
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            border-left: 3px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .quadrant-1 .matrix-task {
+            border-left-color: var(--urgent);
+        }
+
+        .quadrant-2 .matrix-task {
+            border-left-color: var(--important);
+        }
+
+        .quadrant-3 .matrix-task {
+            border-left-color: var(--accent-gold);
+        }
+
+        .quadrant-4 .matrix-task {
+            border-left-color: var(--text-muted);
+        }
+
+        .task-time {
+            font-size: 12px;
+            color: var(--accent-gold);
+            background: rgba(198, 161, 117, 0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 8px;
+        }
+
+        .notes-section {
+            margin-top: 30px;
+        }
+
+        .notes-textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .streak-reward {
+            text-align: center;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(198,161,117,0.2), rgba(229,194,152,0.1));
+            border: 1px solid var(--accent-gold);
+            display: none;
+        }
+
+        .reward-title {
+            font-size: 24px;
+            color: var(--accent-gold);
+            margin-bottom: 10px;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 15px;
+            height: 15px;
+            background-color: var(--accent-gold);
+            border-radius: 50%;
+            opacity: 0;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 60px;
+            z-index: 1001;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        @media (max-width: 768px) {
+            .planner-container {
+                padding: 10px;
+            }
+            
+            .date-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .navbar-custom {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .matrix-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-container {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ------------------ NAVBAR -------------------- -->
+<nav class="navbar navbar-expand-lg navbar-custom">
+  <div class="container">
+    <a class="navbar-brand" href="index.html">Productivity Dashboard</a>
+
+    <button class="navbar-toggler bg-light" data-bs-toggle="collapse" data-bs-target="#navBar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navBar">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a href="home.html" class="nav-link">Home</a></li>
+        <li class="nav-item"><a href="planner.html" class="nav-link">Planner</a></li>
+        <li class="nav-item"><a href="expenses.html" class="nav-link">Expenses</a></li>
+        <li class="nav-item"><a href="mood.html" class="nav-link">Mood</a></li>
+        <li class="nav-item"><a href="projects.html" class="nav-link">Projects</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+
+
+    <div class="planner-container">
+        <div class="date-header">
+            <h1>Daily Planner</h1>
+            <div class="current-date" id="current-date">Monday, January 1, 2023</div>
+        </div>
+
+        <div class="quote-container">
+            <div class="quote-text" id="quote-text">"The secret of getting ahead is getting started."</div>
+            <div class="quote-author" id="quote-author">- Mark Twain</div>
+        </div>
+
+        <div class="streak-reward" id="streak-reward">
+            <div class="reward-title">🎉 Achievement Unlocked! 🎉</div>
+            <div class="reward-message" id="reward-message">You've completed a 3-day streak! Keep up the amazing work!</div>
+        </div>
+
+        <div class="app-card">
+            <h2>Today's Progress</h2>
+            <div class="progress-container">
+                <div style="display: flex; justify-content: space-between;">
+                    <span>Daily Completion</span>
+                    <span id="progress-percent">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill" style="width: 0%;"></div>
+                </div>
+            </div>
+            <div class="stats-container">
+                <div class="stat-item">
+                    <div class="stat-value" id="completed-tasks">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="total-tasks">0</div>
+                    <div class="stat-label">Total Tasks</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="streak-count">0</div>
+                    <div class="stat-label">Day Streak</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="productivity-score">0</div>
+                    <div class="stat-label">Productivity</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="app-card">
+            <h2>Add New Task</h2>
+            <form id="task-form">
+                <input type="text" id="task-title" placeholder="Task title" required>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <select id="task-priority">
+                        <option value="low">Low Priority</option>
+                        <option value="medium">Medium Priority</option>
+                        <option value="high">High Priority</option>
+                    </select>
+                    <input type="text" id="task-time" placeholder="Time slot (e.g., 7-9 PM)">
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <select id="task-urgency">
+                        <option value="not-urgent">Not Urgent</option>
+                        <option value="urgent">Urgent</option>
+                    </select>
+                    <select id="task-importance">
+                        <option value="not-important">Not Important</option>
+                        <option value="important">Important</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-gold">Add Task</button>
+            </form>
+        </div>
+
+        <div class="app-card">
+            <h2>Priority Matrix</h2>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 15px;">
+                Organize tasks by urgency and importance
+            </p>
+            <div class="matrix-container">
+                <div class="matrix-quadrant quadrant-1">
+                    <div class="quadrant-header">
+                        <div class="quadrant-title">Urgent & Important</div>
+                        <span style="color: var(--urgent);" id="quadrant-1-count">0</span>
+                    </div>
+                    <div id="quadrant-1-tasks"></div>
+                </div>
+                
+                <div class="matrix-quadrant quadrant-2">
+                    <div class="quadrant-header">
+                        <div class="quadrant-title">Not Urgent & Important</div>
+                        <span style="color: var(--important);" id="quadrant-2-count">0</span>
+                    </div>
+                    <div id="quadrant-2-tasks"></div>
+                </div>
+                
+                <div class="matrix-quadrant quadrant-3">
+                    <div class="quadrant-header">
+                        <div class="quadrant-title">Urgent & Not Important</div>
+                        <span style="color: var(--accent-gold);" id="quadrant-3-count">0</span>
+                    </div>
+                    <div id="quadrant-3-tasks"></div>
+                </div>
+                
+                <div class="matrix-quadrant quadrant-4">
+                    <div class="quadrant-header">
+                        <div class="quadrant-title">Not Urgent & Not Important</div>
+                        <span style="color: var(--text-muted);" id="quadrant-4-count">0</span>
+                    </div>
+                    <div id="quadrant-4-tasks"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="app-card">
+            <h2>Today's Tasks</h2>
+            <div id="task-list"></div>
+        </div>
+
+        <div class="app-card notes-section">
+            <h2>Daily Notes & Reflections</h2>
+            <textarea class="notes-textarea" id="daily-notes" placeholder="Jot down important notes, ideas, or reflections for today..."></textarea>
+            <button class="btn-outline-gold" id="save-notes">Save Notes</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>Daily Planner Pro &copy; 2023</p>
+    </footer>
+
+    <script>
+        const quotes = [
+            { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+            { text: "It's not that I'm so smart, it's just that I stay with problems longer.", author: "Albert Einstein" },
+            { text: "The way to get started is to quit talking and begin doing.", author: "Walt Disney" },
+            { text: "Don't let yesterday take up too much of today.", author: "Will Rogers" },
+            { text: "You learn more from failure than from success. Don't let it stop you.", author: "Unknown" }
+        ];
+
+        function updateDate() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', options);
+        }
+
+        function displayRandomQuote() {
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            const quote = quotes[randomIndex];
+            document.getElementById('quote-text').textContent = `"${quote.text}"`;
+            document.getElementById('quote-author').textContent = `- ${quote.author}`;
+        }
+
+        let tasks = JSON.parse(localStorage.getItem('dailyPlannerTasks')) || [];
+        let notes = localStorage.getItem('dailyPlannerNotes') || '';
+        let streak = parseInt(localStorage.getItem('dailyPlannerStreak')) || 0;
+        let lastCompletedDate = localStorage.getItem('lastCompletedDate') || '';
+
+        document.getElementById('daily-notes').value = notes;
+
+        function saveTasks() {
+            localStorage.setItem('dailyPlannerTasks', JSON.stringify(tasks));
+            updateTaskList();
+            updateProgress();
+            updateEisenhowerMatrix();
+            checkStreakReward();
+        }
+
+        function saveNotes() {
+            notes = document.getElementById('daily-notes').value;
+            localStorage.setItem('dailyPlannerNotes', notes);
+            alert('Notes saved successfully!');
+        }
+
+        function addTask(title, priority, time, urgency, importance) {
+            const task = {
+                id: Date.now(),
+                title,
+                priority,
+                time,
+                urgency,
+                importance,
+                completed: false,
+                createdAt: new Date().toISOString()
+            };
+            tasks.push(task);
+            saveTasks();
+        }
+
+        function toggleTask(id) {
+            const task = tasks.find(t => t.id === id);
+            if (task) {
+                task.completed = !task.completed;
+                saveTasks();
+                
+                if (task.completed) {
+                    createCelebration();
+                }
+            }
+        }
+
+        function deleteTask(id) {
+            tasks = tasks.filter(t => t.id !== id);
+            saveTasks();
+        }
+
+        function updateTaskList() {
+            const taskList = document.getElementById('task-list');
+            taskList.innerHTML = '';
+
+            if (tasks.length === 0) {
+                taskList.innerHTML = '<p style="text-align: center; color: #A89C8F;">No tasks yet. Add your first task above!</p>';
+                return;
+            }
+
+            const sortedTasks = [...tasks].sort((a, b) => {
+                if (a.completed !== b.completed) return a.completed ? 1 : -1;
+                const priorityOrder = { high: 3, medium: 2, low: 1 };
+                return priorityOrder[b.priority] - priorityOrder[a.priority];
+            });
+
+            sortedTasks.forEach(task => {
+                const taskItem = document.createElement('div');
+                taskItem.className = `task-item ${task.completed ? 'completed' : ''}`;
+                
+                taskItem.innerHTML = `
+                    <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${task.id})">
+                    <div class="task-content">
+                        <div class="task-title">${task.title}</div>
+                        <div class="task-meta">
+                            <span class="priority-${task.priority}">${task.priority.charAt(0).toUpperCase() + task.priority.slice(1)} Priority</span>
+                            ${task.time ? `<span class="task-time">${task.time}</span>` : ''}
+                            <span>${task.urgency === 'urgent' ? 'Urgent' : 'Not Urgent'}</span>
+                            <span>${task.importance === 'important' ? 'Important' : 'Not Important'}</span>
+                        </div>
+                    </div>
+                    <div class="task-actions">
+                        <button class="btn-outline-gold" onclick="deleteTask(${task.id})">Delete</button>
+                    </div>
+                `;
+                
+                taskList.appendChild(taskItem);
+            });
+        }
+
+        function updateProgress() {
+            const totalTasks = tasks.length;
+            const completedTasks = tasks.filter(t => t.completed).length;
+            const progressPercent = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+            
+            document.getElementById('completed-tasks').textContent = completedTasks;
+            document.getElementById('total-tasks').textContent = totalTasks;
+            document.getElementById('progress-percent').textContent = `${progressPercent}%`;
+            document.getElementById('progress-fill').style.width = `${progressPercent}%`;
+            
+            let productivityScore = 0;
+            if (totalTasks > 0) {
+                const priorityWeights = { high: 3, medium: 2, low: 1 };
+                let totalWeight = 0;
+                let completedWeight = 0;
+                
+                tasks.forEach(task => {
+                    const weight = priorityWeights[task.priority];
+                    totalWeight += weight;
+                    if (task.completed) completedWeight += weight;
+                });
+                
+                productivityScore = Math.round((completedWeight / totalWeight) * 100);
+            }
+            document.getElementById('productivity-score').textContent = `${productivityScore}%`;
+            
+            updateStreak(completedTasks, totalTasks);
+        }
+
+        function updateStreak(completedTasks, totalTasks) {
+            const today = new Date().toDateString();
+            
+            if (totalTasks > 0 && completedTasks === totalTasks) {
+                if (lastCompletedDate !== today) {
+                    streak += 1;
+                    lastCompletedDate = today;
+                    localStorage.setItem('dailyPlannerStreak', streak);
+                    localStorage.setItem('lastCompletedDate', today);
+                }
+            }
+            
+            document.getElementById('streak-count').textContent = streak;
+        }
+
+        function updateEisenhowerMatrix() {
+            document.getElementById('quadrant-1-tasks').innerHTML = '';
+            document.getElementById('quadrant-2-tasks').innerHTML = '';
+            document.getElementById('quadrant-3-tasks').innerHTML = '';
+            document.getElementById('quadrant-4-tasks').innerHTML = '';
+            
+            let quadrant1Count = 0;
+            let quadrant2Count = 0;
+            let quadrant3Count = 0;
+            let quadrant4Count = 0;
+            
+            tasks.forEach(task => {
+                if (!task.completed) {
+                    let quadrant;
+                    
+                    if (task.urgency === 'urgent' && task.importance === 'important') {
+                        quadrant = document.getElementById('quadrant-1-tasks');
+                        quadrant1Count++;
+                    } else if (task.urgency === 'not-urgent' && task.importance === 'important') {
+                        quadrant = document.getElementById('quadrant-2-tasks');
+                        quadrant2Count++;
+                    } else if (task.urgency === 'urgent' && task.importance === 'not-important') {
+                        quadrant = document.getElementById('quadrant-3-tasks');
+                        quadrant3Count++;
+                    } else {
+                        quadrant = document.getElementById('quadrant-4-tasks');
+                        quadrant4Count++;
+                    }
+                    
+                    const taskElement = document.createElement('div');
+                    taskElement.className = 'matrix-task';
+                    taskElement.innerHTML = `
+                        <span>${task.title} ${task.time ? `<span class="task-time">${task.time}</span>` : ''}</span>
+                        <button class="btn-outline-gold" style="padding: 4px 8px; font-size: 12px;" onclick="toggleTask(${task.id})">Done</button>
+                    `;
+                    quadrant.appendChild(taskElement);
+                }
+            });
+            
+            document.getElementById('quadrant-1-count').textContent = quadrant1Count;
+            document.getElementById('quadrant-2-count').textContent = quadrant2Count;
+            document.getElementById('quadrant-3-count').textContent = quadrant3Count;
+            document.getElementById('quadrant-4-count').textContent = quadrant4Count;
+        }
+
+        function createCelebration() {
+            // Create confetti
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = '-10px';
+                confetti.style.backgroundColor = getRandomColor();
+                document.body.appendChild(confetti);
+                
+                confetti.animate([
+                    { top: '-10px', opacity: 1, transform: 'rotate(0deg)' },
+                    { top: '100vh', opacity: 0, transform: 'rotate(360deg)' }
+                ], {
+                    duration: Math.random() * 3000 + 2000,
+                    easing: 'cubic-bezier(0.1, 0.8, 0.2, 1)'
+                });
+                
+                setTimeout(() => confetti.remove(), 5000);
+            }
+            
+            // Create celebration emoji
+            const emojis = ['🎉', '✨', '🌟', '💫', '🔥', '✅', '⭐', '💪'];
+            const celebration = document.createElement('div');
+            celebration.className = 'celebration';
+            celebration.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+            document.body.appendChild(celebration);
+            
+            celebration.animate([
+                { opacity: 0, transform: 'translate(-50%, -50%) scale(0)' },
+                { opacity: 1, transform: 'translate(-50%, -50%) scale(1.5)' },
+                { opacity: 0, transform: 'translate(-50%, -50%) scale(1)' }
+            ], {
+                duration: 2000,
+                easing: 'ease-out'
+            });
+            
+            setTimeout(() => celebration.remove(), 2000);
+        }
+
+        function getRandomColor() {
+            const colors = ['#C6A175', '#E4D2B4', '#C85C5C', '#4A7B9D', '#F5E6D3'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        function checkStreakReward() {
+            const rewardElement = document.getElementById('streak-reward');
+            const messageElement = document.getElementById('reward-message');
+            
+            if (streak === 3) {
+                messageElement.textContent = "You've completed a 3-day streak! You're building great habits!";
+                showReward();
+            } else if (streak === 7) {
+                messageElement.textContent = "Amazing! You've maintained a 7-day streak! You're unstoppable!";
+                showReward();
+            }
+        }
+
+        function showReward() {
+            const rewardElement = document.getElementById('streak-reward');
+            rewardElement.style.display = 'block';
+            createCelebration();
+            
+            setTimeout(() => {
+                rewardElement.style.display = 'none';
+            }, 5000);
+        }
+
+        // Event Listeners
+        document.getElementById('save-notes').addEventListener('click', saveNotes);
+
+        document.getElementById('task-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const title = document.getElementById('task-title').value;
+            const priority = document.getElementById('task-priority').value;
+            const time = document.getElementById('task-time').value;
+            const urgency = document.getElementById('task-urgency').value;
+            const importance = document.getElementById('task-importance').value;
+            
+            addTask(title, priority, time, urgency, importance);
+            document.getElementById('task-form').reset();
+        });
+
+        // Initialize
+        updateDate();
+        displayRandomQuote();
+        updateTaskList();
+        updateProgress();
+        updateEisenhowerMatrix();
+    </script>
+</body>
+</html>

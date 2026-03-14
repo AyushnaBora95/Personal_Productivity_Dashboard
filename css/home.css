@@ -1,0 +1,167 @@
+/* ------------------------------------------------------
+   HOMEPAGE-SPECIFIC STYLES ONLY
+   (Banner, Clock, Stats, Bookmarks)
+------------------------------------------------------- */
+
+
+/* ------------------------------------------------------
+   BANNER — Homepage Only
+------------------------------------------------------- */
+
+.banner-vintage {
+    width: 100%;
+    height: 260px;
+    background-image: url('../assets/banner.jpg'); 
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-bottom: 1px solid var(--accent-gold);
+    position: relative;
+    filter: sepia(35%) contrast(90%) brightness(92%);
+    box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.6);
+}
+
+.banner-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(30, 26, 23, 0.45);
+    backdrop-filter: blur(0.5px);
+}
+
+.banner-title {
+    position: absolute;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Cinzel Decorative', serif;
+    color: var(--text-heading);
+    font-size: 40px;
+    letter-spacing: 3px;
+    text-shadow: 0 0 8px rgba(0,0,0,0.5);
+}
+
+
+
+/* ------------------------------------------------------
+   CLOCK — Homepage Only
+------------------------------------------------------- */
+
+.time-container {
+    text-align: center;
+    margin: 25px 0 40px 0;
+}
+
+.clock-center {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 48px;
+    font-weight: 600;
+    color: var(--text-heading);
+}
+
+.date-center {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    color: var(--accent-light);
+    margin-top: -5px;
+}
+
+
+
+/* ------------------------------------------------------
+   STATS (Today Overview Boxes)
+------------------------------------------------------- */
+
+.stat-card {
+    background: var(--bg-card);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(198,161,117,0.35);
+    text-align: center;
+    box-shadow: inset 0 0 12px rgba(0,0,0,0.5);
+}
+
+.stat-card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--accent-light);
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+.stat-card p {
+    font-size: 26px;
+    color: var(--text-heading);
+    font-family: 'Cinzel Decorative';
+}
+
+
+
+/* ------------------------------------------------------
+   BOOKMARKS — Clean & Correct
+------------------------------------------------------- */
+
+.bookmark-item {
+    width: 100px;
+    text-align: center;
+    margin: 15px;
+}
+
+.bookmark-circle {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: 2px solid var(--accent-gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    overflow: hidden;
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.6);
+    transition: 0.25s;
+}
+
+.bookmark-circle:hover {
+    transform: translateY(-4px);
+}
+
+.bookmark-circle img {
+    width: 40px;
+    height: 40px;
+    filter: sepia(25%);
+}
+
+.bookmark-name {
+    font-family: 'Cormorant Garamond', serif;
+    color: var(--accent-light);
+    margin-top: 8px;
+    font-size: 16px;
+}
+
+.bookmark-delete {
+    color: var(--danger);
+    cursor: pointer;
+    margin-top: 5px;
+    font-size: 14px;
+}
+
+.bookmark-rename {
+    color: var(--accent-gold);
+    cursor: pointer;
+    margin-top: 4px;
+    font-size: 14px;
+}
+
+
+
+/* ------------------------------------------------------
+   HOME LAYOUT UTILITIES
+------------------------------------------------------- */
+
+.home-section {
+    margin-top: 40px;
+}
+
+.center-text {
+    text-align: center;
+}

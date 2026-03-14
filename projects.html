@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Planner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/theme.css">
+
+    <style>
+        
+        :root {
+            --bg-dark: #1E1A17;
+            --bg-card: #2A2420;
+            --accent-gold: #C6A175;
+            --accent-light: #E4D2B4;
+            --text-heading: #F5E6D3;
+            --text-body: #D7CEC5;
+            --text-muted: #A89C8F;
+            --danger: #C85C5C;
+            --success: #5C8C5C;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-body);
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar-custom {
+            background-color: var(--bg-dark);
+            border-bottom: 1px solid var(--accent-gold);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 28px;
+            color: var(--text-heading);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+        }
+
+        .nav-link {
+            font-family: 'Cinzel Decorative', serif;
+            font-size: 18px;
+            color: var(--text-heading);
+            text-decoration: none;
+            margin: 0 15px;
+        }
+
+        .nav-link.active {
+            color: var(--accent-gold);
+        }
+
+        .app-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(198,161,117,0.35);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: inset 0 0 12px rgba(0,0,0,0.4);
+        }
+
+        .btn-gold {
+            background-color: var(--accent-gold);
+            color: #1E1A17;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+        }
+
+        input, textarea, select {
+            background-color: #191614;
+            border: 1px solid var(--accent-gold);
+            color: var(--text-heading);
+            border-radius: 8px;
+            padding: 10px;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .planner-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            color: var(--accent-gold);
+            font-weight: 600;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .project-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(198,161,117,0.35);
+            border-radius: 12px;
+            padding: 20px;
+            transition: transform 0.3s;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .project-title {
+            font-size: 20px;
+            color: var(--text-heading);
+            margin-bottom: 10px;
+        }
+
+        .project-meta {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background-color: #191614;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--accent-gold);
+            border-radius: 4px;
+            transition: width 0.5s;
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid rgba(198,161,117,0.2);
+        }
+
+        .task-checkbox {
+            margin-right: 10px;
+            accent-color: var(--accent-gold);
+        }
+
+        .completed {
+            text-decoration: line-through;
+            opacity: 0.7;
+        }
+
+        .priority-high { color: var(--danger); }
+        .priority-medium { color: var(--accent-gold); }
+        .priority-low { color: var(--text-muted); }
+
+        .status-not-started { color: var(--text-muted); }
+        .status-in-progress { color: var(--accent-gold); }
+        .status-completed { color: var(--success); }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        @media (max-width: 768px) {
+            .project-grid {
+                grid-template-columns: 1fr;
+            }
+            .navbar-custom {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ------------------ NAVBAR -------------------- -->
+<nav class="navbar navbar-expand-lg navbar-custom">
+  <div class="container">
+    <a class="navbar-brand" href="index.html">Productivity Dashboard</a>
+
+    <button class="navbar-toggler bg-light" data-bs-toggle="collapse" data-bs-target="#navBar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navBar">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a href="home.html" class="nav-link">Home</a></li>
+        <li class="nav-item"><a href="planner.html" class="nav-link">Planner</a></li>
+        <li class="nav-item"><a href="expenses.html" class="nav-link">Expenses</a></li>
+        <li class="nav-item"><a href="mood.html" class="nav-link">Mood</a></li>
+        <li class="nav-item"><a href="projects.html" class="nav-link">Projects</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+
+
+    <div class="planner-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+            <h1>Project Planner</h1>
+            <button class="btn-gold" onclick="showProjectModal()">+ New Project</button>
+        </div>
+
+        <div class="app-card">
+            <h2>Project Overview</h2>
+            <div class="stats-container">
+                <div class="stat-item">
+                    <div class="stat-value" id="total-projects">0</div>
+                    <div class="stat-label">Total Projects</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="completed-projects">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="in-progress">0</div>
+                    <div class="stat-label">In Progress</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="overdue">0</div>
+                    <div class="stat-label">Overdue</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="app-card">
+            <h2>My Projects</h2>
+            <div class="project-grid" id="project-list">
+                <!-- Projects will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Modal -->
+    <div class="modal" id="project-modal">
+        <div class="modal-content">
+            <h2 id="modal-title">Create New Project</h2>
+            <form id="project-form">
+                <input type="text" id="project-name" placeholder="Project Name" required>
+                <textarea id="project-desc" placeholder="Project Description" rows="3"></textarea>
+                <select id="project-category">
+                    <option value="academic">Academic</option>
+                    <option value="sih">SIH/Hackathon</option>
+                    <option value="internship">Internship</option>
+                    <option value="personal">Personal</option>
+                </select>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <input type="date" id="project-start" required>
+                    <input type="date" id="project-deadline" required>
+                </div>
+                <select id="project-priority">
+                    <option value="low">Low Priority</option>
+                    <option value="medium">Medium Priority</option>
+                    <option value="high">High Priority</option>
+                </select>
+                <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                    <button type="button" class="btn-gold" onclick="closeProjectModal()">Cancel</button>
+                    <button type="submit" class="btn-gold">Save Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Project Detail Modal -->
+    <div class="modal" id="project-detail-modal">
+        <div class="modal-content">
+            <h2 id="detail-project-name">Project Details</h2>
+            <div id="project-detail-content">
+                <!-- Project details will be loaded here -->
+            </div>
+            <button class="btn-gold" onclick="closeProjectDetailModal()" style="margin-top: 20px;">Close</button>
+        </div>
+    </div>
+
+    <script>
+        let projects = JSON.parse(localStorage.getItem('projects')) || [];
+        let editingProjectId = null;
+
+        function showProjectModal(projectId = null) {
+            const modal = document.getElementById('project-modal');
+            const title = document.getElementById('modal-title');
+            const form = document.getElementById('project-form');
+            
+            if (projectId) {
+                editingProjectId = projectId;
+                const project = projects.find(p => p.id === projectId);
+                title.textContent = 'Edit Project';
+                document.getElementById('project-name').value = project.name;
+                document.getElementById('project-desc').value = project.description || '';
+                document.getElementById('project-category').value = project.category;
+                document.getElementById('project-start').value = project.startDate;
+                document.getElementById('project-deadline').value = project.deadline;
+                document.getElementById('project-priority').value = project.priority;
+            } else {
+                editingProjectId = null;
+                title.textContent = 'Create New Project';
+                form.reset();
+            }
+            modal.style.display = 'flex';
+        }
+
+        function closeProjectModal() {
+            document.getElementById('project-modal').style.display = 'none';
+        }
+
+        function showProjectDetail(projectId) {
+            const project = projects.find(p => p.id === projectId);
+            const modal = document.getElementById('project-detail-modal');
+            const content = document.getElementById('project-detail-content');
+            
+            document.getElementById('detail-project-name').textContent = project.name;
+            
+            const progress = calculateProjectProgress(project);
+            const status = getProjectStatus(project);
+            
+            content.innerHTML = `
+                <div class="project-meta">
+                    <div><strong>Category:</strong> ${project.category}</div>
+                    <div><strong>Priority:</strong> <span class="priority-${project.priority}">${project.priority}</span></div>
+                    <div><strong>Status:</strong> <span class="status-${status}">${status}</span></div>
+                    <div><strong>Deadline:</strong> ${new Date(project.deadline).toLocaleDateString()}</div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: ${progress}%"></div>
+                </div>
+                <div style="text-align: center; margin: 10px 0;">${progress}% Complete</div>
+                
+                <h3>Tasks</h3>
+                <div id="task-list-${project.id}">
+                    ${project.tasks && project.tasks.length > 0 ? 
+                      project.tasks.map(task => `
+                        <div class="task-item">
+                            <input type="checkbox" ${task.completed ? 'checked' : ''} 
+                                   onchange="toggleTask('${project.id}', '${task.id}')" class="task-checkbox">
+                            <span class="${task.completed ? 'completed' : ''}">${task.name}</span>
+                        </div>
+                      `).join('') : 
+                      '<p>No tasks yet. Add tasks to track progress.</p>'
+                    }
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <input type="text" id="new-task-${project.id}" placeholder="New task..." style="margin-bottom: 10px;">
+                    <button class="btn-gold" onclick="addTask('${project.id}')">Add Task</button>
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="btn-gold" onclick="showProjectModal('${project.id}')">Edit Project</button>
+                    <button class="btn-gold" onclick="deleteProject('${project.id}')" style="background: var(--danger);">Delete</button>
+                </div>
+            `;
+            
+            modal.style.display = 'flex';
+        }
+
+        function closeProjectDetailModal() {
+            document.getElementById('project-detail-modal').style.display = 'none';
+        }
+
+        function saveProject(event) {
+            event.preventDefault();
+            
+            const project = {
+                id: editingProjectId || Date.now().toString(),
+                name: document.getElementById('project-name').value,
+                description: document.getElementById('project-desc').value,
+                category: document.getElementById('project-category').value,
+                startDate: document.getElementById('project-start').value,
+                deadline: document.getElementById('project-deadline').value,
+                priority: document.getElementById('project-priority').value,
+                tasks: editingProjectId ? projects.find(p => p.id === editingProjectId)?.tasks || [] : [],
+                createdAt: new Date().toISOString()
+            };
+
+            if (editingProjectId) {
+                const index = projects.findIndex(p => p.id === editingProjectId);
+                projects[index] = project;
+            } else {
+                projects.push(project);
+            }
+
+            localStorage.setItem('projects', JSON.stringify(projects));
+            closeProjectModal();
+            renderProjects();
+            updateStats();
+        }
+
+        function deleteProject(projectId) {
+            if (confirm('Are you sure you want to delete this project?')) {
+                projects = projects.filter(p => p.id !== projectId);
+                localStorage.setItem('projects', JSON.stringify(projects));
+                closeProjectDetailModal();
+                renderProjects();
+                updateStats();
+            }
+        }
+
+        function addTask(projectId) {
+            const taskInput = document.getElementById(`new-task-${projectId}`);
+            const taskName = taskInput.value.trim();
+            
+            if (taskName) {
+                const project = projects.find(p => p.id === projectId);
+                if (!project.tasks) project.tasks = [];
+                
+                project.tasks.push({
+                    id: Date.now().toString(),
+                    name: taskName,
+                    completed: false
+                });
+                
+                localStorage.setItem('projects', JSON.stringify(projects));
+                showProjectDetail(projectId);
+                renderProjects();
+                updateStats();
+            }
+            taskInput.value = '';
+        }
+
+        function toggleTask(projectId, taskId) {
+            const project = projects.find(p => p.id === projectId);
+            const task = project.tasks.find(t => t.id === taskId);
+            task.completed = !task.completed;
+            
+            localStorage.setItem('projects', JSON.stringify(projects));
+            showProjectDetail(projectId);
+            renderProjects();
+            updateStats();
+        }
+
+        function calculateProjectProgress(project) {
+            if (!project.tasks || project.tasks.length === 0) return 0;
+            const completed = project.tasks.filter(task => task.completed).length;
+            return Math.round((completed / project.tasks.length) * 100);
+        }
+
+        function getProjectStatus(project) {
+            const progress = calculateProjectProgress(project);
+            if (progress === 100) return 'completed';
+            if (progress > 0) return 'in-progress';
+            return 'not-started';
+        }
+
+        function renderProjects() {
+            const projectList = document.getElementById('project-list');
+            
+            if (projects.length === 0) {
+                projectList.innerHTML = '<p style="text-align: center; color: var(--text-muted); grid-column: 1/-1;">No projects yet. Create your first project!</p>';
+                return;
+            }
+
+            projectList.innerHTML = projects.map(project => {
+                const progress = calculateProjectProgress(project);
+                const status = getProjectStatus(project);
+                const isOverdue = new Date(project.deadline) < new Date() && status !== 'completed';
+                
+                return `
+                    <div class="project-card" onclick="showProjectDetail('${project.id}')">
+                        <div class="project-title">${project.name}</div>
+                        <div class="project-meta">
+                            <span class="priority-${project.priority}">${project.priority} priority</span> • 
+                            ${project.category} • 
+                            <span class="status-${status}">${status}</span>
+                            ${isOverdue ? ' • <span style="color: var(--danger);">Overdue</span>' : ''}
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progress}%"></div>
+                        </div>
+                        <div style="font-size: 14px; color: var(--text-muted);">
+                            ${project.tasks ? project.tasks.filter(t => t.completed).length : 0}/${project.tasks ? project.tasks.length : 0} tasks completed
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateStats() {
+            const total = projects.length;
+            const completed = projects.filter(p => getProjectStatus(p) === 'completed').length;
+            const inProgress = projects.filter(p => getProjectStatus(p) === 'in-progress').length;
+            const overdue = projects.filter(p => new Date(p.deadline) < new Date() && getProjectStatus(p) !== 'completed').length;
+
+            document.getElementById('total-projects').textContent = total;
+            document.getElementById('completed-projects').textContent = completed;
+            document.getElementById('in-progress').textContent = inProgress;
+            document.getElementById('overdue').textContent = overdue;
+        }
+
+        // Event Listeners
+        document.getElementById('project-form').addEventListener('submit', saveProject);
+
+        // Initialize
+        renderProjects();
+        updateStats();
+    </script>
+</body>
+</html>

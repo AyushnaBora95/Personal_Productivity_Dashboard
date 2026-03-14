@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mood & Journal — MyDashboard</title>
+
+<link rel="stylesheet" href="css/theme.css">
+
+<!-- Bootstrap & fonts & Chart.js -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<style>
+:root{
+  --bg-card:#2A2420;
+  --accent-gold:#C6A175;
+  --accent-light:#E4D2B4;
+  --text-heading:#F5E6D3;
+  --text-body:#D7CEC5;
+  --text-muted:#A89C8F;
+  --danger:#C85C5C;
+  --card-radius:12px;
+}
+.site-container{ max-width:1200px; margin:32px auto; padding:0 40px; }
+
+/* page title */
+.page-title{ font-family:'Cormorant Garamond',serif; color:var(--text-heading); font-size:36px; letter-spacing:1px; margin-bottom:6px; }
+
+
+/* card style */
+.card-ghost{ background:var(--bg-card); border:1px solid rgba(198,161,117,0.18); border-radius:var(--card-radius); padding:18px; box-shadow:0 6px 18px rgba(0,0,0,0.6); }
+
+/* mood selector */
+.mood-selector{ display:flex; gap:12px; flex-wrap:wrap; }
+.mood-btn{
+  width:84px; height:84px; border-radius:12px; display:flex;align-items:center;justify-content:center;flex-direction:column;
+  background:transparent; border:1px solid rgba(198,161,117,0.12); color:var(--text-heading); cursor:pointer;
+  transition:all 0.18s; font-size:22px;
+}
+.mood-btn .mood-label{ font-size:12px; margin-top:6px; color:var(--text-muted) }
+.mood-btn:hover{ transform:translateY(-4px); box-shadow:0 6px 18px rgba(0,0,0,0.45); }
+.mood-btn[aria-pressed="true"]{ background:var(--accent-gold); color:#1E1A17; border-color:var(--accent-gold); }
+
+/* selected mood preview */
+.selected-preview{ display:flex; align-items:center; gap:14px; font-size:18px; color:var(--text-heading); }
+
+/* textarea and inputs */
+#moodNote{ min-height:100px; resize:vertical; }
+.form-control, .form-select { background:#191614; border:1px solid var(--accent-gold); color:var(--text-body); border-radius:8px; padding:10px; }
+
+/* small cards row */
+.stats-row{ display:flex; gap:12px; flex-wrap:wrap; }
+.stat-card{ flex:1 1 150px; background:rgba(0,0,0,0.04); padding:12px; border-radius:10px; }
+
+/* journal list */
+/* Mood Log Cards */
+/* Mood Log Cards */
+.mood-card {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    background: var(--bg-card);
+    border: 1px solid rgba(198,161,117,0.35);
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.35);
+}
+
+.mood-emoji {
+    width: 64px;
+    height: 64px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    color: #1E1A17;
+    background: var(--accent-gold);
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.4);
+}
+
+.mood-content {
+    flex: 1;
+    min-width: 0;  /* REQUIRED for line clamp */
+}
+
+.mood-note {
+    color: var(--text-body);
+    font-size: 16px;
+    margin-bottom: 6px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 3 !important;
+}
+
+
+.mood-meta {
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.mood-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.mood-actions button {
+    background: transparent;
+    border: none;
+    color: var(--accent-gold);
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.mood-actions button.delete {
+    color: var(--danger);
+}
+
+
+.card-ghost {
+    overflow: visible;
+    padding-bottom: 22px;
+}
+
+/* filters */
+.filter-row{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+
+/* chart card sizing */
+.card-chart{ min-height:220px; max-height:360px; display:flex; flex-direction:column; padding:14px; }
+.card-chart canvas{ width:100% !important; height:240px !important; }
+.card-ghost .d-flex{ flex-wrap:wrap; align-items:center; }
+
+.card-ghost .d-flex .btn-gold, .card-ghost .d-flex .btn-outline-gold{
+  margin-top:8px;
+}
+
+.card-ghost{ padding-bottom:28px; }
+.journal-dates-row .small-muted{ color:var(--text-muted); font-size:14px; }
+.date-compact{ width:200px; padding:10px 12px; height:46px; box-sizing:border-box; border-radius:8px; }
+.form-select{ height:48px; padding:10px 14px; }
+
+.journal-dates-row label{ display:inline-block; color:var(--text-muted); font-size:14px; }
+
+.card-ghost > div:nth-child(4){
+  margin-bottom:6px;
+}
+.card-ghost.journal-card{
+  padding-bottom:12px;
+  margin-bottom:14px;
+  min-height:0;
+  overflow:visible;
+}
+#journalEmpty{
+  padding:12px 8px !important;
+  font-size:15px;
+  line-height:1.4;
+}
+#journalList{
+  min-height:40px;
+  max-height:360px;
+  overflow-y:auto;
+}
+
+.card-ghost + .card-ghost{ margin-top:18px; }
+
+.modal-content{
+    background-color:#1E1A17 ;
+    border:1px solid var(--accent-gold);
+    color:var(--text-heading);
+}
+.modal-body input,
+.modal-body textarea,
+.modal-body select{
+    background-color:#191614 !important;
+    color:var(--text-heading) !important;
+    border:1px solid var(--accent-gold) !important;
+    border-radius:8px;
+}
+
+.modal-body input::placeholder,
+.modal-body textarea::placeholder{
+    color:var(--text-muted) !important;
+}
+
+
+@media (max-width:640px){
+  .journal-dates-row{ flex-direction:column; align-items:stretch; gap:10px; }
+  .journal-dates-row .date-compact{ width:100%; max-width:none; }
+  .form-select{ width:100%; }
+  .card-ghost > div:nth-child(4) button{ width:48%; }
+}
+/* responsive */
+@media (max-width:768px){
+  .site-container{ padding:0 18px; }
+  .mood-selector{ gap:10px; justify-content:flex-start; }
+  .mood-btn{ width:64px; height:64px; font-size:18px; }
+  .mood-emoji{ width:56px; height:56px; font-size:22px; }
+  .card-chart canvas{ height:200px !important; }
+}
+
+/* accessibility focus */
+.mood-btn:focus{ outline:none; box-shadow:0 0 0 4px rgba(198,161,117,0.14); }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR  -->
+<!-- ------------------ NAVBAR -------------------- -->
+<nav class="navbar navbar-expand-lg navbar-custom">
+  <div class="container">
+    <a class="navbar-brand text-light" style="font-family: 'Cormorant Garamond'; font-size: 26px;" href="index.html">
+      Productivity Dashboard
+    </a>
+
+    <button class="navbar-toggler bg-light" data-bs-toggle="collapse" data-bs-target="#navBar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navBar">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a href="home.html" class="nav-link">Home</a></li>
+        <li class="nav-item"><a href="planner.html" class="nav-link">Planner</a></li>
+        <li class="nav-item"><a href="expenses.html" class="nav-link">Expenses</a></li>
+        <li class="nav-item"><a href="mood.html" class="nav-link">Mood</a></li>
+        <li class="nav-item"><a href="projects.html" class="nav-link">Projects</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+66
+
+<main class="site-container">
+  <div class="mb-3">
+    <h1 class="page-title">Mood & Journal</h1>
+    <div class="section-divider">────────── ✦ ✦ ✦ ──────────</div>
+    <p class="small-muted">Log your mood, write short notes, and track patterns over time. </p>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <div class="card-ghost mb-3">
+        <div style="font-family:'Cormorant Garamond',serif;color:var(--text-heading);margin-bottom:10px">How are you feeling?</div>
+
+        <!-- Mood selector -->
+        <div class="mood-selector" role="tablist" aria-label="Mood selector">
+          <button class="mood-btn" data-mood="happy" aria-pressed="false" title="Happy">😊<div class="mood-label">Happy</div></button>
+          <button class="mood-btn" data-mood="content" aria-pressed="false" title="Content">🙂<div class="mood-label">Content</div></button>
+          <button class="mood-btn" data-mood="neutral" aria-pressed="false" title="Neutral">😐<div class="mood-label">Neutral</div></button>
+          <button class="mood-btn" data-mood="sad" aria-pressed="false" title="Sad">😔<div class="mood-label">Sad</div></button>
+          <button class="mood-btn" data-mood="angry" aria-pressed="false" title="Angry">😡<div class="mood-label">Angry</div></button>
+          <button class="mood-btn" data-mood="tired" aria-pressed="false" title="Tired">😴<div class="mood-label">Tired</div></button>
+        </div>
+
+        <hr style="border-color:rgba(198,161,117,0.06);margin:14px 0">
+
+        <!-- Add entry -->
+        <div style="font-family:'Cormorant Garamond',serif;color:var(--text-heading);margin-bottom:10px">Add Entry</div>
+
+        <div class="mb-2">
+          <div class="selected-preview" id="selectedPreview">
+            <div id="previewEmoji" style="font-size:34px">😊</div>
+            <div id="previewLabel" style="color:var(--text-body)">Happy</div>
+          </div>
+        </div>
+
+        <div class="mb-2">
+          <textarea id="moodNote" class="form-control" placeholder="Write a short note (optional)"></textarea>
+        </div>
+
+        <div class="mb-2">
+          <input id="moodTags" class="form-control" placeholder="tags (comma separated)"/>
+        </div>
+
+        <div class="d-flex gap-2 mt-2">
+          <button id="addMoodBtn" class="btn-gold">Add Entry</button>
+          <button id="clearMoodBtn" class="btn-outline-gold">Clear</button>
+        </div>
+      </div>
+
+      <!-- Quick stats -->
+      <div class="card-ghost">
+        <div style="font-family:'Cormorant Garamond',serif;color:var(--text-heading);margin-bottom:10px">Quick Stats</div>
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="small-muted">Most common (7d)</div>
+            <div id="statMost" style="font-weight:700;color:var(--text-heading);margin-top:6px">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="small-muted">Entries (7d)</div>
+            <div id="statCount7" style="font-weight:700;color:var(--text-heading);margin-top:6px">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="small-muted">Last entry</div>
+            <div id="statLast" style="font-weight:700;color:var(--text-heading);margin-top:6px">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<div class="col-lg-7">
+  <div class="card-ghost mb-3 journal-card">
+    <div style="font-family:'Cormorant Garamond',serif;color:var(--text-heading);margin-bottom:8px">Journal</div>
+
+    <div style="margin-bottom:12px">
+      <select id="filterMood" class="form-select" aria-label="Filter by mood" style="width:100%">
+        <option value="">All moods</option>
+        <option value="happy">Happy</option>
+        <option value="content">Content</option>
+        <option value="neutral">Neutral</option>
+        <option value="sad">Sad</option>
+        <option value="angry">Angry</option>
+        <option value="tired">Tired</option>
+      </select>
+    </div>
+
+    <div class="journal-dates-row" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:10px">
+        <label for="filterFrom" class="small-muted" style="min-width:46px">From</label>
+        <input type="date" id="filterFrom" class="form-control date-compact" placeholder="From">
+      </div>
+
+      <div style="display:flex;align-items:center;gap:10px">
+        <label for="filterTo" class="small-muted" style="min-width:26px">To</label>
+        <input type="date" id="filterTo" class="form-control date-compact" placeholder="To">
+      </div>
+    </div>
+
+    <!-- Action buttons -->
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+      <button id="applyMoodFilters" class="btn-gold" style="min-width:110px">Apply</button>
+      <button id="clearMoodFilters" class="btn-outline-gold" style="min-width:110px">Clear</button>
+    </div>
+
+    <!-- Journal list -->
+    <div id="journalList" style="margin-top:8px"></div>
+    <div id="journalEmpty" class="small-muted" style="text-align:center;padding:12px;display:none">No entries yet. Add your mood to start journaling.</div>
+  </div>
+
+      <div class="card-ghost">
+        <div style="font-family:'Cormorant Garamond',serif;color:var(--text-heading);margin-bottom:10px">Mood Analytics</div>
+        <div class="card-chart">
+          <canvas id="moodChart"></canvas>
+        </div>
+        <div style="margin-top:10px;color:var(--text-muted)">Use filters above to change the chart range. </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Edit Mood Modal -->
+<div class="modal fade" id="editMoodModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Mood Entry</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editId">
+        <div class="mb-2"><label class="small-muted">Mood</label>
+          <select id="editMoodSelect" class="form-select">
+            <option value="happy">Happy</option><option value="content">Content</option><option value="neutral">Neutral</option><option value="sad">Sad</option><option value="angry">Angry</option><option value="tired">Tired</option>
+          </select>
+        </div>
+        <div class="mb-2"><label class="small-muted">Note</label><textarea id="editNote" class="form-control"></textarea></div>
+        <div class="mb-2"><label class="small-muted">Tags (comma separated)</label><input id="editTags" class="form-control"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-outline-gold" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn-gold" id="saveEditMood">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+/* ===== mood page JS ===== */
+
+/* storage key */
+const KEY_MOOD='moodEntries';
+
+const MOOD_MAP={
+  happy:{emoji:'😊',label:'Happy',color:getComputedStyle(document.documentElement).getPropertyValue('--accent-gold')||'#C6A175'},
+  content:{emoji:'🙂',label:'Content',color:getComputedStyle(document.documentElement).getPropertyValue('--accent-light')||'#E4D2B4'},
+  neutral:{emoji:'😐',label:'Neutral',color:'#7C6B57'},
+  sad:{emoji:'😔',label:'Sad',color:'#6A7A8A'},
+  angry:{emoji:'😡',label:'Angry',color:getComputedStyle(document.documentElement).getPropertyValue('--danger')||'#C85C5C'},
+  tired:{emoji:'😴',label:'Tired',color:'#9A7E8A'}
+};
+
+/* page refs */
+const moodBtns=document.querySelectorAll('.mood-btn');
+const previewEmoji=document.getElementById('previewEmoji');
+const previewLabel=document.getElementById('previewLabel');
+const addMoodBtn=document.getElementById('addMoodBtn');
+const clearMoodBtn=document.getElementById('clearMoodBtn');
+const moodNote=document.getElementById('moodNote');
+const moodTags=document.getElementById('moodTags');
+
+const journalList=document.getElementById('journalList');
+const journalEmpty=document.getElementById('journalEmpty');
+
+const filterMood=document.getElementById('filterMood');
+const filterFrom=document.getElementById('filterFrom');
+const filterTo=document.getElementById('filterTo');
+const applyMoodFilters=document.getElementById('applyMoodFilters');
+const clearMoodFilters=document.getElementById('clearMoodFilters');
+
+const statMost=document.getElementById('statMost');
+const statCount7=document.getElementById('statCount7');
+const statLast=document.getElementById('statLast');
+
+let entries=JSON.parse(localStorage.getItem(KEY_MOOD)||'[]');
+let moodChart=null;
+
+/* active mood selected (default happy) */
+let activeMood='happy';
+function setActiveMood(key){
+  activeMood=key;
+  moodBtns.forEach(b=>b.setAttribute('aria-pressed','false'));
+  const btn=document.querySelector('.mood-btn[data-mood="'+key+'"]');
+  if(btn) btn.setAttribute('aria-pressed','true');
+  previewEmoji.textContent = MOOD_MAP[key].emoji;
+  previewLabel.textContent = MOOD_MAP[key].label;
+}
+
+/* attach selector events */
+moodBtns.forEach(btn=>{
+  btn.addEventListener('click', ()=> setActiveMood(btn.dataset.mood));
+  btn.addEventListener('keydown', e=>{ if(e.key==='Enter' || e.key===' ') { e.preventDefault(); setActiveMood(btn.dataset.mood); }});
+});
+
+/* add mood entry */
+addMoodBtn.addEventListener('click', ()=>{
+  const note=moodNote.value.trim();
+  const tags = moodTags.value.split(',').map(t=>t.trim()).filter(Boolean);
+  const obj={ id:'mood_'+Date.now(), mood:activeMood, note, tags, timestamp:new Date().toISOString() };
+  entries.unshift(obj);
+  localStorage.setItem(KEY_MOOD, JSON.stringify(entries));
+  moodNote.value=''; moodTags.value='';
+  setActiveMood(activeMood); // keep same selection
+  renderAll();
+});
+
+/* clear form */
+clearMoodBtn.addEventListener('click', ()=>{ moodNote.value=''; moodTags.value=''; setActiveMood('happy'); });
+
+/* render journal list */
+function renderJournal(filtered){
+  const arr = Array.isArray(filtered)?filtered:entries;
+  journalList.innerHTML='';
+  if(!arr.length){ journalEmpty.style.display='block'; return; } else journalEmpty.style.display='none';
+  arr.forEach(ent=>{
+    const item=document.createElement('div'); item.className='mood-card';
+    const emojiSpan=document.createElement('div'); emojiSpan.className='mood-emoji'; emojiSpan.textContent=MOOD_MAP[ent.mood]?.emoji||'🙂';
+    emojiSpan.style.background = MOOD_MAP[ent.mood]?.color || 'var(--accent-gold)';
+    const content=document.createElement('div'); content.className='mood-content';
+    const note=document.createElement('div'); note.className='mood-note'; note.textContent = ent.note || MOOD_MAP[ent.mood].label;
+    const meta=document.createElement('div'); meta.className='mood-meta'; meta.textContent = formatDateDisplay(ent.timestamp) + (ent.tags && ent.tags.length? ' • tags: '+ent.tags.join(', '): '');
+    content.appendChild(note); content.appendChild(meta);
+    const actions=document.createElement('div'); actions.className='mood-actions';
+    const editBtn=document.createElement('button'); editBtn.innerHTML='✎'; editBtn.title='Edit'; editBtn.addEventListener('click', ()=> startEdit(ent.id));
+    const delBtn=document.createElement('button'); delBtn.innerHTML='🗑'; delBtn.className='delete'; delBtn.title='Delete'; delBtn.addEventListener('click', ()=> deleteMood(ent.id));
+    actions.appendChild(editBtn); actions.appendChild(delBtn);
+    item.appendChild(emojiSpan); item.appendChild(content); item.appendChild(actions);
+    journalList.appendChild(item);
+  });
+}
+
+/* delete */
+function deleteMood(id){
+  if(!confirm('Delete this entry?')) return;
+  entries = entries.filter(e=>e.id!==id);
+  localStorage.setItem(KEY_MOOD, JSON.stringify(entries));
+  renderAll();
+}
+
+/* edit */
+function startEdit(id){
+  const ent = entries.find(e=>e.id===id);
+  if(!ent) return;
+  document.getElementById('editId').value = ent.id;
+  document.getElementById('editMoodSelect').value = ent.mood;
+  document.getElementById('editNote').value = ent.note;
+  document.getElementById('editTags').value = (ent.tags||[]).join(', ');
+  new bootstrap.Modal(document.getElementById('editMoodModal')).show();
+}
+document.getElementById('saveEditMood').addEventListener('click', ()=>{
+  const id=document.getElementById('editId').value;
+  const mood=document.getElementById('editMoodSelect').value;
+  const note=document.getElementById('editNote').value.trim();
+  const tags=document.getElementById('editTags').value.split(',').map(t=>t.trim()).filter(Boolean);
+  const idx = entries.findIndex(e=>e.id===id);
+  if(idx>=0){ entries[idx].mood=mood; entries[idx].note=note; entries[idx].tags=tags; localStorage.setItem(KEY_MOOD, JSON.stringify(entries)); renderAll(); bootstrap.Modal.getInstance(document.getElementById('editMoodModal')).hide(); }
+});
+
+/* date display helper */
+function formatDateDisplay(iso){
+  const d=new Date(iso);
+  const now=new Date();
+  const sameDay = d.toDateString()===now.toDateString();
+  const yesterday = new Date(now.getFullYear(),now.getMonth(),now.getDate()-1).toDateString();
+  if(sameDay) return 'Today • '+d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  if(d.toDateString()===yesterday) return 'Yesterday • '+d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  return d.toLocaleDateString()+ ' • ' + d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+}
+
+/* filters */
+applyMoodFilters.addEventListener('click', applyFilters);
+clearMoodFilters.addEventListener('click', ()=>{
+  filterMood.value=''; filterFrom.value=''; filterTo.value='';
+  renderAll();
+});
+
+function applyFilters(){
+  let filtered = entries.slice();
+  const fMood = filterMood.value;
+  const from = filterFrom.value;
+  const to = filterTo.value;
+  if(fMood) filtered = filtered.filter(e=>e.mood===fMood);
+  if(from) filtered = filtered.filter(e=>new Date(e.timestamp) >= new Date(from+'T00:00:00'));
+  if(to) filtered = filtered.filter(e=>new Date(e.timestamp) <= new Date(to+'T23:59:59'));
+  renderJournal(filtered);
+  renderChart(filtered);
+  updateStats(filtered);
+}
+
+/* stats: most common mood (7d), entries count(7d), last entry */
+function updateStats(filtered){
+  const now=new Date();
+  const weekAgo = new Date(now.getFullYear(), now.getMonth(), now.getDate()-6);
+  const last7 = entries.filter(e=> new Date(e.timestamp) >= weekAgo );
+  const counts = {};
+  last7.forEach(e=> counts[e.mood] = (counts[e.mood]||0)+1);
+  const most = Object.keys(counts).length? Object.keys(counts).reduce((a,b)=> counts[a]>counts[b]?a:b) : '—';
+  statMost.textContent = most==='—' ? '—' : (MOOD_MAP[most].label + ' (' + (counts[most]||0) + ')');
+  statCount7.textContent = last7.length;
+  statLast.textContent = entries.length? formatDateDisplay(entries[0].timestamp) : '—';
+}
+
+/* chart rendering */
+function renderChart(filtered){
+  const arr = Array.isArray(filtered)?filtered:entries;
+  const counts = {happy:0,content:0,neutral:0,sad:0,angry:0,tired:0};
+  arr.forEach(e=>{ if(counts[e.mood]!==undefined) counts[e.mood] +=1; });
+  const labels = Object.keys(counts).map(k=>MOOD_MAP[k].label);
+  const data = Object.keys(counts).map(k=>counts[k]);
+  const colors = Object.keys(counts).map(k=>MOOD_MAP[k].color);
+
+  const ctx=document.getElementById('moodChart').getContext('2d');
+  if(moodChart) moodChart.destroy();
+  moodChart = new Chart(ctx, {
+    type:'bar',
+    data:{ labels, datasets:[{ label:'Entries', data, backgroundColor:colors, borderRadius:6 }] },
+    options:{
+      plugins:{ legend:{ display:false }, tooltip:{ titleColor: 'var(--text-heading)', bodyColor:'var(--text-body)' } },
+      responsive:true,
+      scales:{
+        x:{ ticks:{ color: getComputedStyle(document.documentElement).getPropertyValue('--text-heading')||'#F5E6D3' } },
+        y:{ ticks:{ color: getComputedStyle(document.documentElement).getPropertyValue('--text-body')||'#D7CEC5', beginAtZero:true, stepSize:1 } }
+      },
+      maintainAspectRatio:false
+    }
+  });
+}
+
+/* render all */
+function renderAll(){
+  entries = JSON.parse(localStorage.getItem(KEY_MOOD)||'[]');
+  renderJournal(entries);
+  renderChart(entries);
+  updateStats();
+}
+renderAll();
+
+/* initialize default selected mood */
+setActiveMood('happy');
+
+window._moodEntries=entries;
+window._renderAll=renderAll;
+</script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Personal Dashboard</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Poppins:wght@300;400&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Theme + Home Styles -->
+    <link rel="stylesheet" href="css/theme.css">
+    <link rel="stylesheet" href="css/home.css">
+</head>
+
+<body>
+
+<!-- ------------------ NAVBAR -------------------- -->
+<nav class="navbar navbar-expand-lg navbar-custom">
+  <div class="container">
+    <a class="navbar-brand text-light" style="font-family: 'Cormorant Garamond'; font-size: 26px;" href="index.html">
+      Productivity Dashboard
+    </a>
+
+    <button class="navbar-toggler bg-light" data-bs-toggle="collapse" data-bs-target="#navBar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navBar">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+        <li class="nav-item"><a href="planner.html" class="nav-link">Planner</a></li>
+        <li class="nav-item"><a href="expenses.html" class="nav-link">Expenses</a></li>
+        <li class="nav-item"><a href="mood.html" class="nav-link">Mood</a></li>
+        <li class="nav-item"><a href="projects.html" class="nav-link">Projects</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+
+
+<!-- ------------------ BANNER -------------------- -->
+<div class="banner-vintage">
+    <div class="banner-overlay"></div>
+    <h1 class="banner-title">Your Personal Dashboard</h1>
+</div>
+
+<!-- ------------------ CLOCK -------------------- -->
+<div class="container">
+    <div class="time-container">
+        <div id="clockTime" class="clock-center">00:00</div>
+        <div id="clockDate" class="date-center">Loading date...</div>
+    </div>
+</div>
+
+<!-- ------------------ OVERVIEW STATS -------------------- -->
+<div class="container mt-4">
+    <div class="row g-4">
+
+        <div class="col-md-3">
+            <div class="stat-card">
+                <h3>📝 Tasks Today</h3>
+                <p id="statTasks">0</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="stat-card">
+                <h3>💰 Expenses Today</h3>
+                <p id="statExpenses">₹0</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="stat-card">
+                <h3>😊 Mood Logged</h3>
+                <p id="statMood">None</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="stat-card">
+                <h3>📂 Active Projects</h3>
+                <p id="statProjects">0</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ------------------ HERO SECTION -------------------- -->
+<div class="container text-center mt-5">
+    <h1>Welcome to Your Dashboard</h1>
+    <div class="section-divider">✦ ✦ ✦</div>
+    <p style="max-width: 700px; margin: auto;">
+        Your personalized homepage for planning, organizing, tracking, and growing.
+    </p>
+</div>
+
+<!-- ------------------ QUICK ACCESS CARDS -------------------- -->
+<div class="container mt-5">
+    <div class="row g-4">
+
+        <div class="col-md-4">
+            <div class="app-card">
+                <h3>Today's Planner</h3>
+                <p>View your daily tasks and reminders.</p>
+                <a href="planner.html" class="btn-gold">Open Planner</a>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="app-card">
+                <h3>Track Expenses</h3>
+                <p>Monitor your spending and savings.</p>
+                <a href="expenses.html" class="btn-gold">Open Expenses</a>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="app-card">
+                <h3>Today's Mood</h3>
+                <p>Check your mood patterns and journal.</p>
+                <a href="mood.html" class="btn-gold">Open Mood Tracker</a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ------------------ BOOKMARK MANAGER -------------------- -->
+<div class="home-section">
+    <h2>Bookmarks</h2>
+    <div class="section-divider">✦ ✦ ✦</div>
+
+    <div class="d-flex gap-2 mb-3">
+        <input type="text" id="bookmarkURL" class="form-control" placeholder="Enter website URL">
+        <input type="text" id="bookmarkName" class="form-control" placeholder="Enter name (optional)">
+        <button class="btn-gold" onclick="addBookmark()">Add</button>
+    </div>
+
+    <!-- Icons go here -->
+    <div id="bookmarkContainer" class="d-flex flex-wrap"></div>
+</div>
+
+<!-- ------------------ FOOTER -------------------- -->
+<footer class="text-center mt-5 mb-4" style="color: var(--text-muted);">
+    © 2025 Personal Dashboard — All Rights Reserved.
+</footer>
+
+<!-- ------------------ JAVASCRIPT -------------------- -->
+<script src="js/bookmarks.js"></script>
+<script src="js/time.js"></script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
